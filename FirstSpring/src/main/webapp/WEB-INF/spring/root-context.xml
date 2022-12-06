@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 프로젝트의 모든 설정정보를 제어하는 파일(쇼핑몰) -->
+	
+		
+	
+	<!-- 디비연결정보 객체 -->
+<!-- 	<bean id="dataSource"  -->
+<!-- 		  class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+<!-- 		  객체에 있는 set()메서드 -->
+<!-- 		  <property name="driverClassName"  value="com.mysql.cj.jdbc.Driver"/> -->
+<!-- 		  <property name="url" value="jdbc:mysql://localhost:3306/springdb" /> -->
+<!-- 		  <property name="username" value="root" /> -->
+<!-- 		  <property name="password" value="1234" /> -->
+<!-- 	</bean> --> <!-- log4jdbc 설치 전에 사용했던 디비연결정보 코드 -->
+		
+			<!-- log4jdbc 설치 후에 사용할 디비연결정보 코드 -->
+	<bean id="dataSource" 
+	      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	     <!-- 객체에 있는 set()메서드 -->
+	     <property name="driverClassName"  value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/> 
+	     <property name="url" value="jdbc:log4jdbc:mysql://localhost:3306/springdb"/>
+	     <property name="username" value="root"/>
+	     <property name="password" value="1234"/>      
+	</bean>	
+	
+	<!-- 디비연결정보 객체 -->
+	
+	
+	
+	
+	<!-- sqlSessionFactory객체(디비연결, mybatis설정, sql-mapper설정) -->
+	<bean id="sqlSessionFactory"
+		  class="org.mybatis.spring.SqlSessionFactoryBean" >
+		  
+		  <!-- 디비연결정보 -->
+		  <property name="dataSource" ref="dataSource" /> <!-- setDateSource를 불러오는 동작 / dataSource의 객체가 매개변수로 있어서 이 객체를 불러올 수 있다. -->
+						<!-- dataSource 내용을 포함하고 있는 dataSource객체  -->
+		  <!-- mybatis설정 -->	
+		  <property name="configLocation" value="classpath:/mybatis-config.xml" />			
+		 <!-- 이 객체 하나가 디비연결도하고 mybatis설정도 하고 sql-mapper설정도 한다. -->
+		 
+		 <!-- mapper 설정 정보 -->
+					<!-- <property name="mapperLocations"  -->
+					<!-- value="classpath:mappers/memberMapper.xml" /> -->
+		 		    <!-- 이렇게 되면 너무나 특정파일들만 종속되어 있다.  -->
+		 	 <property name="mapperLocations" 
+		 		   value="classpath:mappers/**/*Mapper.xml" /> <!-- 모든 경로에 있는 Mapper.xml관련한 모든 파일에 디비와 mybatis 연결 및 설정 -->
+		 		   
+	</bean>
+	<!-- sqlSessionFactory객체(디비연결, mybatis설정, sql-mapper설정) -->
+	
+	<!-- sqlSessionTemplate 객체 (디비연결, mybatis설정, sql-mapper설정, 자원해제) -->
+	<bean id="sqlSession" 
+		  class="org.mybatis.spring.SqlSessionTemplate" 
+		destroy-method="clearCache">
+	<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />	
+	</bean>
+	<!-- sqlSessionTemplate 객체 (디비연결, mybatis설정, sql-mapper설정, 자원해제) -->
+	 
+	 <!-- 디비관련 패키지(persistence)를 연결 -->
+	 <context:component-scan base-package="com.itwillbs.persistence" />
+	 <!-- 서비스관련 패키지(service)를 연결 -->
+	 <context:component-scan base-package="com.itwillbs.service"></context:component-scan>
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
