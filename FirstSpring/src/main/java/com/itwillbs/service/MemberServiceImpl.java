@@ -1,5 +1,7 @@
 package com.itwillbs.service;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -45,4 +47,33 @@ public class MemberServiceImpl implements MemberService{
 		
 		return (resultVO != null)? true:false; // if대신 삼항연산자 사용
 	}
+	
+	
+	@Override	// 오버라이딩하면 부모메서드는 은닉되고 해당 메서드를 호출할 수 있다.
+	public MemberVO getMember(String id) {
+//		MemberVO vo = dao.getMember(id); // 매개변수에 불과하기때문에 userid -> id
+//		return vo;
+		
+		return dao.getMember(id);
+	}
+	
+	@Override
+	public Integer updateMember(MemberVO uvo) {
+		mylog.debug(" updateMember(uvo) ");
+		
+		return dao.updateMember(uvo);
+	}
+	
+	
+	@Override
+	public void deleteMember(MemberVO dvo) {
+		dao.deleteMember(dvo);
+	}
+	
+	@Override
+	public List<MemberVO> getMemList(String id) {
+		
+		return dao.getMemberList(id);
+	}
+	
 }

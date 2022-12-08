@@ -1,11 +1,14 @@
 package com.itwillbs.web;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,9 +118,16 @@ public class MemberController {
 	// http://localhost:8080/member/main
 		// 메인페이지
 		@RequestMapping(value = "/main",method = RequestMethod.GET)
-		public void mainGET() throws Exception{
+		public String mainGET(HttpSession session) throws Exception{
 			mylog.info(" mainGET() 호출 ");
+			
+			if(session.getAttribute("id") == null) {
+				mylog.debug("아이디 정보 없음");
+				return "redirect:/member/login";
+			}
+			
 			// 연결된 뷰페이지 호출		
+			return "/member/main";
 		}
 		
 		
@@ -132,6 +142,119 @@ public class MemberController {
 			// 페이지 이동(로그인 페이지)
 			return "redirect:/member/login";
 		}	
+		
+		
+		
+		// 회원 정보 조회
+		@RequestMapping(value ="/info", method = RequestMethod.GET)
+		public void infoGET(HttpSession session, Model model) throws Exception{
+			mylog.debug("infoGET() 호출 @@@@@@@@@@@@@@@@@@@"); 
+			
+			// 기존 MVC로 치면 [패턴3]이다.
+			// 전달정보(x) -> 세션정보(ID) 필요
+			String id = (String) session.getAttribute("id");
+			
+			// 컨트롤러에서 바로 DAO를 불러올 수 없으니 중간의 완충제 역할을 하는 서비스 객체를 불러오자.
+			// DB가서 회원정보 가져오기 -> 서비스 계층
+			MemberVO vo = service.getMember(id);
+			mylog.debug(vo+"");
+			
+			// DB정보를 뷰페이지로 전달(request)
+			model.addAttribute("vo", vo);
+//			model.addAttribute(service.getMember(id)); 
+			// => 리턴해서 vo값을 넣지 않고도 이렇게 바로 서비스메서드 적을 수도 있다.
+			
+			// view 페이지 이동
+			
+		}
+		
+		
+		
+		// 회원정보 수정(기본의 정보를 화면에 출력) - info의 동작과 유사하기때문에 참고하기
+		@RequestMapping(value ="/modify", method = RequestMethod.GET)
+		public void modifyGET(HttpSession session, Model model) throws Exception{
+			mylog.debug(" modifyGET() "); 
+			// insertForm.jsp 참고해서 수정 뷰페이지 생성
+			String id = (String) session.getAttribute("id");
+			
+			// 서비스  - 회원정조 조회
+			// DB정보를 뷰페이지로 전달(reqeust)
+			model.addAttribute("vo", service.getMember(id)); // 두 동작을 한 번에 작성완.
+			
+			// view 페이지 이동 => 리턴타입이 void라서 RequestMapping에 적혀있는 value값의 주소.jsp 파일로 뷰페이지 이동한다.
+		}
+		// 회원정보 수정(기본의 정보를 화면에 출력)
+		
+		
+		// 회원정보 수정 (수정된 정보를 DB에 변경)
+		@RequestMapping(value = "/modify", method = RequestMethod.POST)
+		public String modifyPOST(MemberVO vo) throws Exception {
+			mylog.debug(" modifyPOST() ");
+			// 한글처리 => 필터
+			// 전달정보 저장 (폼-POST : 수정정보)
+			mylog.debug(vo+""); // = vo.toString()
+			
+			// 서비스 - DB 회원정보 수정동작
+			Integer result = service.updateMember(vo);
+			String uri = "";
+			if(result ==1) {
+				// 수정 성공(메인페이지)
+				uri="redirect:/member/main";
+			} else {
+				// 수정 실패(수정페이지)
+				uri="redirect:/member/modify";
+			}
+			// 페이지 이동(메인페이지)
+			return uri;
+		}
+		
+		
+		
+		// 회원정보 삭제 (삭제 비밀번호 입력)
+		@RequestMapping(value = "/remove",method = RequestMethod.GET)
+		public void removeGET() throws Exception {
+			mylog.info(" removeGET() ");
+			
+			// 연결된 뷰페이지 이동
+		}
+		
+		// 회원 정보 삭제(데이터 삭제)
+		@RequestMapping(value = "/remove", method = RequestMethod.POST)
+		public String removePOST(MemberVO vo, HttpSession session) throws Exception{
+			// 전달된 파라미터값 저장
+			
+			// 서비스 - DAO 회원 탈퇴
+			service.deleteMember(vo);
+			
+			// 세션정보 초기화 (로그인정보)
+			session.invalidate();
+			
+			// 페이지 이동
+			return "redirect:/member/main";
+		}
+		
+		
+		// 회원 전체 목록조회
+		@RequestMapping(value ="/list", method = RequestMethod.GET)
+		public String listGET(HttpSession session, Model model) throws Exception{
+			// 관리자만 사용할 수 있어야하기 때문에 Session정보 들거와야한다.
+			// 관리자 로그인 제어
+			String id = (String) session.getAttribute("id");
+			if(id == null || !id.equals("admin")) {
+				return "redirect:/member/login";
+			}
+			
+			// 서비스 - DAO 회원목록 가져오기
+			List<MemberVO> memberList = service.getMemList(id);
+			
+			// Model 객체 사용 - 정보 전달
+			// => 매개변수 자리에 Model객체 생성해야 사용할 수 있음
+			model.addAttribute("memberList", memberList);
+			
+			// 뷰페이지 이동
+			return "/member/list";
+		}
+		
 		
 	
 }
