@@ -259,7 +259,20 @@ Spring(Legacy)  vs Spring Boot
 	TRACE (1)	: 상세한 로그 정보 출력
 	
 	
-	
+	<!-- 한글처리 필터 설정 -->
+	<filter>
+		<filter-name>encoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 한글처리 필터 설정 -->
 	
 	
 	
