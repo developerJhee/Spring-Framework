@@ -1,13 +1,21 @@
 package com.itwillbs.controller;
 
+import java.util.List;
+
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.itwillbs.domain.BoardVO;
 import com.itwillbs.service.BoardService;
@@ -25,6 +33,10 @@ public class BoardController {
 	
 	// http://localhost:8080/board/regist
 	
+	
+	/**
+	 * 게시판 글쓰기
+	 */
 	// 게시판 글쓰기 GET
 	@RequestMapping(value = "/regist", method = RequestMethod.GET)
 //	@GetMapping 어노테이션 바로 써도 된다.
@@ -37,20 +49,107 @@ public class BoardController {
 	
 	// 게시판 글쓰기 POST
 	@RequestMapping(value = "/regist", method = RequestMethod.POST)
-	public String registPOST(BoardVO vo) throws Exception{
+	public String registPOST(BoardVO vo, RedirectAttributes rttr) throws Exception{
 		mylog.debug("/board/regist(POST) 호출 ");
 		mylog.debug("GET방식의 데이터 전달 -> DB저장 -> 페이지이동 ");
 		
 		// 0. 한글처리
 		// 1. 전달된 정보 저장(title, content, writer)
 		mylog.debug(vo+""); // mylog는 String형태만 호출가능하기때문에 연결자를 쓰던가 toString()를 같이 써준다.
-		
+							
 		// 2. 서비스 -> DAO 접근(mapper)
 		service.insertBoard(vo);
 		mylog.debug("게시판 글쓰기 완료!");
 		
 		// 3. 페이지로 이동(list페이지)
-		return "/board/list";
+		
+//		model.addAttribute("result", "createOK");
+		rttr.addFlashAttribute("result", "createOK");
+		
+		return "redirect:/board/list";
+//		return "/list"; // 워크벤치에 글은 들어가는데 주소가 안맞음
 	}
+	
+	
+	
+	/**
+	 * 글목록 LIST
+	 */
+	// http://localhost:8080/board/list?result=createOK
+	
+	// http://localhost:8080/board/list
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public void listGET(HttpSession session, Model model, @ModelAttribute("result") String result) throws Exception{
+		mylog.debug(" /board/list 호출 -> DB정보 가져와서 출력 ");
+		
+		// 전달받은 정보X -> 생겨버렸네
+		mylog.debug(" 전달정보 : " + result);
+		
+		// 세션객체 - 글 조회수 증가 체크정보
+		session.setAttribute("updateCheck", true); // 세션이 존재하면 true
+		
+		// 서비스 -> DAO 게시판 리스트 가져오기
+		List<BoardVO> boardList = service.getBoardListAll();
+		
+		// 연결되어 있는 뷰페이지로 정보 전달 (Model 객체)
+		model.addAttribute("boardList", boardList);
+		
+		// 페이지 이동(/board/list.jsp)
+		// => 메서드의 리턴타입이 void이기 때문에 매핑된 name의 뷰페이지를 알아서 찾아준다.
+	}
+	
+	
+	/**
+	 * 게시판 본문보기
+	 */	
+	// @ModelAttribute : request.getParameter() 동작 ->  Model 객체에 저장 (1:n 관계)
+	// @RequestParam : request.getParameter() 동작 (1:1관계) 
+	//				   => 문자열, 숫자, 날짜 등 데이터 형변환 가능
+	
+	// http://localhost:8080/board/read?bno=?1
+	@RequestMapping(value = "/read", method = RequestMethod.GET)
+	// public void readGET(@ModelAttribute("bno") int bno) throws Exception{
+	public void readGET(@RequestParam("bno") int bno, HttpSession session) throws Exception{
+		// 전달정보 (bno)
+		mylog.debug("전달정보(bno) : "+bno);
+		
+		// 세션객체 (for 조회수)
+		boolean isUpdateCheck = (boolean) session.getAttribute("updateCheck");
+		mylog.debug("조회수 증가 상태 : " + isUpdateCheck);
+		
+		// 조회수 1증가(list -> read 증가O, F5 증가X)
+				// 세션객체를 사용해서 list -> read일때만 사용가능하도록(=A)
+				// 조회수 증가 후 = B (그러므로 B에서는 동작X)
+				// 리스트로 돌아가면 다시 A
+		if(isUpdateCheck) { //= true
+			// 조회수 1증가(list -> read 증가o, F5증가X)
+			service.updateViewcnt(bno);
+			mylog.debug("조회수 1증가" );
+			
+			// 상태변경 (true -> false);
+			session.setAttribute("updateCheck", !isUpdateCheck);				
+		}
+		
+		// 서비스 -> DAO (특정 글번호에 해당하는 정보 가져오기)
+		
+		// 연결된 뷰페이지로 정보 전달(model 객체 써야함)		
+		
+		// 페이지이동
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
