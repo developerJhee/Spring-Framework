@@ -109,7 +109,7 @@ public class BoardController {
 	// http://localhost:8080/board/read?bno=?1
 	@RequestMapping(value = "/read", method = RequestMethod.GET)
 	// public void readGET(@ModelAttribute("bno") int bno) throws Exception{
-	public void readGET(@RequestParam("bno") int bno, HttpSession session) throws Exception{
+	public void readGET(Model model, @RequestParam("bno") int bno, HttpSession session) throws Exception{
 		// 전달정보 (bno)
 		mylog.debug("전달정보(bno) : "+bno);
 		
@@ -131,23 +131,73 @@ public class BoardController {
 		}
 		
 		// 서비스 -> DAO (특정 글번호에 해당하는 정보 가져오기)
+		BoardVO vo =service.getBoard(bno);
 		
 		// 연결된 뷰페이지로 정보 전달(model 객체 써야함)		
+		model.addAttribute("vo", vo);
 		
-		// 페이지이동
+//	=	model.addAttribute("vo", service.getBoard(bno)); 이렇게 한 번에 쓸 수도 있다.
+//	=	model.addAttribute(service.getBoard(bno));
+		
+	}
+	
+	
+	/**
+	 * 수정하기 GET
+	 */
+	@RequestMapping(value = "/modify", method = RequestMethod.GET)
+	public void modifyGET(Model model, int bno) throws Exception{
+							// modelAttribute를 쓰든 requestParam을 쓰든 상관없다.
+							// 특정 기본형 데이터값 하나만 전달할 경우 자동변환이 되므로 int bno만 적어도 가능
+		// 전달정보 bno 파라미터 저장
+		// 서비스 - DAO(글 조회)				
+		// model 객체 사용해서 원하는 페이지로 이동
+		// -> view 페이지로 정보 전달
+		model.addAttribute("vo", service.getBoard(bno));
+		
+		// /board/modify.jsp 페이지 이동 => void라서 modify로 자동이동
 	}
 	
 	
 	
+	/**
+	 * 수정하기 POST
+	 */
+	@RequestMapping(value = "/modify", method = RequestMethod.POST)
+	public String modifyPOST(BoardVO vo, RedirectAttributes rttr) throws Exception{
+		// 전달된 정보(수정할정보)저장
+		mylog.debug(vo+"");
+		
+		// 서비스 - DAO : 정보 수정 메서드 호출 (RedirectAttributes 객체 생성)
+		Integer result = service.updateBoard(vo);
+		
+		if(result > 0) {
+			// "수정완료" - 정보 전달
+			rttr.addFlashAttribute("result", "modOK");
+		}
+		
+		// 페이지이동(/board/list)
+		
+		return "redirect:/board/list";
+	}
 	
 	
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * 글 삭제하기 POST
+	 */
+	@RequestMapping(value = "/remove", method = RequestMethod.POST)
+	public String removePOST(int bno, RedirectAttributes rttr) throws Exception{
+		// 전달정보 저장(bno) => form -submit하니가 전달정보 존재
+		mylog.debug(bno+"");
+		// 서비스-DAO : 게시판글 삭제 메서드 호출
+		service.deleteBoard(bno);
+		// "삭제완료" 정보를 list 페이지로 전달
+		rttr.addFlashAttribute("result", "delOK");
+		// 게시판 리스트로 이동(/board/list)
+		
+		return "redirect:/board/list";
+	}
 	
 	
 	

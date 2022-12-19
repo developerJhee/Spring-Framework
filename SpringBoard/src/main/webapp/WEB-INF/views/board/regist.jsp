@@ -3,11 +3,11 @@
 
 <%@ include file="../include/header.jsp" %>
 
-	<h1>/board/regist.jsp</h1>
+     <h1>/board/regist.jsp</h1>
 
-<div class="box box-primary">
-	<div class="box-header with-border">
-		<h3 class="box-title">게시판 글쓰기</h3>
+	<div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title"> 게시판 글쓰기 </h3>
 	</div>
 	<!-- /.box-header -->
 	<!-- form start -->

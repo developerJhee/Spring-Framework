@@ -15,4 +15,13 @@ public interface BoardService {
 	
 	// 글 조회수 1증가
 	public void updateViewcnt(Integer bno) throws Exception;
+	
+	// 글번호(bno)를 사용한 정보 조회
+	public BoardVO getBoard(Integer bno) throws Exception;
+	
+	// 글정보 수정
+	public Integer updateBoard(BoardVO vo) throws Exception;
+	
+	// 글정보 삭제
+	public void deleteBoard(Integer bno) throws Exception;
 }

@@ -73,7 +73,39 @@ public class BoardDAOImpl implements BoardDAO{
 	}
 	
 	
+	/**
+	 * 글번호(bno)를 사용한 정보 조회 오버라이딩
+	 */
+	@Override
+	public BoardVO getBoard(Integer bno) throws Exception {
+		mylog.debug("getBoard(Integer bno) 호출 ");
+		
+		BoardVO vo = sqlSession.selectOne(NAMESPACE + ".getBoard", bno);		
+		return vo;
+	}
 	
 	
 	
+	/**
+	 * 글 수정하기 오버라이딩
+	 */
+	@Override
+	public Integer updateBoard(BoardVO vo) throws Exception {
+		mylog.debug(" updateBoard(BoardVO vo) ");
+		return sqlSession.update(NAMESPACE + ".updateBoard", vo);
+	}
+	
+	
+	/**
+	 * 글 삭제하기 오버라이딩
+	 */
+	@Override
+	public void deleteBoard(Integer bno) throws Exception {
+		mylog.debug(" deleteBoard(Integer bno) ");
+		sqlSession.delete(NAMESPACE + ".deleteBoard", bno);
+	}
 }
+
+
+
+

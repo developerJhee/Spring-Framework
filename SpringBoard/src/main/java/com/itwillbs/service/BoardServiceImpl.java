@@ -60,13 +60,33 @@ public class BoardServiceImpl implements BoardService {
 	
 	
 	
+	/**
+	 *  글번호(bno)를 사용한 정보 조회
+	 */
+	@Override
+	public BoardVO getBoard(Integer bno) throws Exception{
+		mylog.debug("getBoard(Integer bno) 호출");
+		return dao.getBoard(bno);
+	}
+	
+	
+	/**
+	 * 글 정보수정
+	 */
+	@Override
+	public Integer updateBoard(BoardVO vo) throws Exception {
+		mylog.debug(" updateBoard(BoardVO vo) ");
+		return dao.updateBoard(vo);
+	}
 	
 	
 	
-	
-	
-	
-	
-	
+	/**
+	 * 글 정보삭제
+	 */
+	@Override
+	public void deleteBoard(Integer bno) throws Exception {
+		 dao.deleteBoard(bno);
+	}
 	
 }
