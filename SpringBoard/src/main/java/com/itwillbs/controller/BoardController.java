@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.itwillbs.domain.BoardVO;
+import com.itwillbs.domain.Criteria;
+import com.itwillbs.domain.PageVO;
 import com.itwillbs.service.BoardService;
 
 @Controller // 컨트롤러로 인식하게끔 설정
@@ -200,6 +202,42 @@ public class BoardController {
 	}
 	
 	
+	/**
+	 * 페이징처리된 글 목록 
+	 */
+	// http://localhost:8080/board/listPage
+	// http://localhost:8080/board/listPage?page=2
+	// http://localhost:8080/board/listPage?perPageNum=30
+	// http://localhost:8080/board/listPage?page=3&perPageNum=20
+	@RequestMapping(value = "/listPage",method = RequestMethod.GET)
+	public String listPageGET(Criteria cri,HttpSession session,Model model) throws Exception {
+		mylog.debug(" /board/listPage 호출 -> DB정보 가져와서 출력 ");
+		
+		// 전달받은 정보X -> 생겨버렸네
+//		mylog.debug(" 전달정보 : " + result);
+		
+		// 세션객체 - 글 조회수 증가 체크정보
+		session.setAttribute("updateCheck", true); // 세션이 존재하면 true
+		
+		// 페이징처리객체 (강한결합 -> X)
+//		Criteria cri = new Criteria();
+		
+		// 서비스 -> DAO 게시판 리스트 가져오기
+		List<BoardVO> boardList = service.getListPage(cri);
+		
+		// 페이징처리 하단부 정보 준비
+		PageVO pvo = new PageVO();
+		pvo.setCri(cri);
+		pvo.setTotalCount(7964);
+		
+		model.addAttribute("pvo", pvo);
+		
+		// 연결되어 있는 뷰페이지로 정보 전달 (Model 객체)
+		model.addAttribute("boardList", boardList);
+		
+		// 페이지 이동(/board/list.jsp)	
+		return "/board/list";
+	}
 	
 	
 }

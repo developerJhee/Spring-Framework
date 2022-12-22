@@ -146,11 +146,64 @@ CREATE TABLE `springdb`.`tbl_board` (
 		
 	
 	
+
+  	CDATA	(UnParsed) Character Data : 파싱하지 않는 문자 데이터 (문자 그대로 해석)
+	PCDATA   Parsed Character Data : 파싱하는 문자 데이터 (문자를 문법에맞게 파싱해서 해석)
+	
+  <select id="listPage" resultType="BoardVO">
+  <![CDATA[
+  	select * from tbl_board
+  	where bno > 0
+  	
+  	where bno &gt; 0 	
+  	order by bno desc, regdate desc
+  	limit #{page},10
+  	]]>
+  </select>
 	
 	
+	* 페이징처리 (하단부 - 페이지 블럭)
+		ex) 한페이지에 10개씩 출력, 블럭 10개 => 글 100
 	
+	시작페이지 번호 : 1 - 10, 11 - 20, 21 - 30
+		ex) 한 페이지에 10개씩 출력, 블럭 10개 => 글 75
+	끝페이지 번호 :  1 - 8
 	
+	전체 테이터 개수 : 전체 글개수 (이게 있어야 페이징계산이 가능)
 	
+	이전 : 시작페이지 번호가 1이 아닐 때 존재
 	
+	다음 : 마지막 페이지 번호보다 글의 개수가 많을 때 존재
 	
-	
+		ex)  총 글 : 122 , 페이지당 10개씩 출력, 페이지블럭 10개씩 출력
+    
+    * page 번호 : 3
+    시작페이지 1, 끝페이지 10 , 이전 - X, 다음 - O
+    
+    * page 번호 : 10
+    시작페이지 1, 끝페이지 10 , 이전 - X, 다음 - O
+    
+    * page 번호 : 12 
+    시작페이지 11, 끝페이지 13, 이전 - O, 다음 - X
+    
+   
+    
+    // displayPageNum 한페이지에 출력할 페이지의 수
+    
+    * endPage =  (int)(Math.ceil(page / displayPageNum))*displayPageNum; => 정수연산만가능 실수면 0으로 인식
+    값이 실수로 나와도 계산이 잘 되게 하려면 (double) 형변환 해준다
+    	=>  endPage =  (int)(Math.ceil(page / (double)displayPageNum))*displayPageNum;
+    	
+    => 끝페이지 번호 = (int) (Math.ceil(현재 페이지 / (double) 한 페이지에 출력할 페이지의 수)) * 한 페이지에 출력할 페이지의 수;
+    ex)  3페이지 / 10개씩 페이지 출력 
+    			   (int)(Math.ceil(3/10) * 10) -> 10
+		 23페이지 / 10개씩 페이지 출력
+		 		   (int)(Math.ceil(23/10.0) * 10) -> 30 
+		 17페이지 / 5개씩 페이지 출력
+		 		   (int)(Math.ceil(17/5.0) * 5) -> 20
+		 		   
+	* startPage = (endPage - displayPageNum) + 1;
+	 => 시작 페이지 번호 = (끝페이지 번호 - 한 페이지에 출력할 페이지의 수) + 1
+	* prev = (startPage == 1)? false:true;
+    
+    * next = (endPage * perPageNum >= totalCount)? false : true; 

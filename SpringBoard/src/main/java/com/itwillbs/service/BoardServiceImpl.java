@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.itwillbs.domain.BoardVO;
+import com.itwillbs.domain.Criteria;
 import com.itwillbs.persistence.BoardDAO;
 
 @Service // 서비스 객체로 인식
@@ -89,4 +90,18 @@ public class BoardServiceImpl implements BoardService {
 		 dao.deleteBoard(bno);
 	}
 	
+	
+	/**
+	 * ﻿글정보조회(페이징처리cri) 오버라이딩
+	 */
+	@Override
+	public List<BoardVO> getListPage(Criteria cri) throws Exception {
+		
+		return dao.getListPage(cri);
+	}
 }
+
+
+
+
+
