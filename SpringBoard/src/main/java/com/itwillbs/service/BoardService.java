@@ -28,4 +28,7 @@ public interface BoardService {
 	
 	// 글정보조회(페이징처리cri)
 	public List<BoardVO> getListPage(Criteria cri) throws Exception;
+	
+	// 글 전체 개수
+	public int totalCnt() throws Exception;
 }

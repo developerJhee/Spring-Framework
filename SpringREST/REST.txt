@@ -1,0 +1,80 @@
+﻿REST.txt
+
+﻿REST(﻿Representational State Transfer)
+ - 데이터 통신 방식 (URL/URI - 데이터 연결)
+ - 하나의 URI는 고유한 리소스(데이터)를 가지도록 한다.
+ => 서버에서 제공하는 데이터를 각각의 기기(웹, 모바일...)에 
+ 	공통으로 처리가능한 데이터
+ 	
+ 
+ REST API : REST방식으로(특정 URI를 통한 데이터 제공) 정보제공하는 API
+ => REST API 제공하는 서비스를 Restful하다. (RESTful API)
+  
+   리소스 URI는 동사(리소스에 대한 작업)가 아닌 명사(리소스)를 기반으로 해야 합니다.
+   
+   https://adventure-works.com/orders // 명사-Good
+   https://adventure-works.com/create-order // 동사-Avoid 
+   
+   리소스 URI를 컬렉션/항목/컬렉션보다 더 복잡하게 요구하지 않는 것이 좋습니다.
+   
+   
+   @ResponseBody - 스프링3 이후 : REST방식 지원
+   @RestController - 스프링4 
+   
+   
+   Http Status (상태코드)
+   https://developer.mozilla.org/ko/docs/Web/HTTP/Status
+   
+   100번대 : 현재 데이터의 처리 중인 상태
+   100 : 데이터의 일부를 서버가 받은 상태
+   
+   200번대 : 정상적인 응답
+   200 : 에러없이 정상처리
+   204 : 정상처리 완료 but, 서버에서 보낼 데이터가 없음
+   
+   300번대 : 다른 URL 처리
+   301 : 요청된 페이지가 새로움 URL로 변경
+   304 : 기존의 데이터와 변경된 것이 없음
+   
+   400번대 : 서버에서 인식할 수 없음
+   400 : 전송된 요청(request)에 문제가 있음(전달데이터 오류)
+   403 : 서버 접속 허가 불가
+   404 : URL에 해당하는 자원(페이지)가 없음
+   406 : 전송방식 에러 (REST 동작 시 발생)
+   
+   500번대 : 서버 내부의 문제
+   500 : 서버에서 데이터 처리 시 에러
+   502 : 게이트웨이/프록시 상태 문제(과부하)
+   503 : 일시적인 과부하, 서비스 중단상태
+   504 : 지정된 처리 시간이 지나서 처리불가
+   
+   ----------------------------------------------------------------------------
+   REST 방식 -> 동작 URI 구현(HTTP Method)
+   
+   GET : 정보 조회(select)
+   POST : 정보 추가/생성(create)
+   PUT/PATCH : 정보 수정(전체/일부분) (update)
+   DELETE : 정보삭제(delete)
+   
+   * URI 주소 구성
+   [ /작업명/기본키 + 메서드 + 데이터 ]
+   
+   작업명 : 요청하고자하는 작업의 종류(컨트롤러 종류 ..member/boards/goods)
+   기본키 : 요청에 필요한 작업 동작의 기본키
+   메서드 : 요청하는 기능
+   데이터 : 기능에 필요한 데이터 (JSON)
+   
+   // CRUD
+   Create		새글 작성		POST		/boards+데이터
+   Read			특정글 조회		GET			/boards/100
+   Update		정보 수정		PUT			/boards/100+(수정할)데이터
+   Delete		글 삭제		DELETE		/boards/100
+   
+   
+   
+   
+   
+   
+   
+   
+   

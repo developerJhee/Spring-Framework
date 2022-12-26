@@ -131,6 +131,15 @@ public class BoardDAOImpl implements BoardDAO{
 		
 		return sqlSession.selectList(NAMESPACE + ".listPage2", cri);
 	}
+	
+	
+	/**
+	 * 게시판 글 전체 조회 메서드 오버라이딩
+	 */
+	@Override
+	public int totalCnt() throws Exception {
+		return sqlSession.selectOne(NAMESPACE + ".countBoard"); // 특정데이터를 조회할 수 있는 메서드
+	}
 }
 
 

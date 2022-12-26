@@ -99,6 +99,15 @@ public class BoardServiceImpl implements BoardService {
 		
 		return dao.getListPage(cri);
 	}
+	
+	
+	/**
+	 * 글전체개수조회 오버라이딩
+	 */
+	@Override
+	public int totalCnt() throws Exception {
+		return dao.totalCnt();
+	}
 }
 
 

@@ -228,7 +228,9 @@ public class BoardController {
 		// 페이징처리 하단부 정보 준비
 		PageVO pvo = new PageVO();
 		pvo.setCri(cri);
-		pvo.setTotalCount(7964);
+		//pvo.setTotalCount(7964);
+		mylog.debug("totalCnt : " + service.totalCnt());
+		pvo.setTotalCount(service.totalCnt()); // 작성되어있는 글 전체 개수
 		
 		model.addAttribute("pvo", pvo);
 		
