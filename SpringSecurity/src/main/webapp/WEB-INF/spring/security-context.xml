@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 접근권한 에러처리 객체생성 -->
+	<bean id="customAccessDeniedHandler" 
+			class="com.itwillbs.security.CustomAccessDeniedHandler"/>
+	
+   <!-- security-context.xml 시큐리티 관련 설정정보 -->
+	<security:http>
+	    <security:intercept-url pattern="/sec/all" access="permitAll"/>
+	    <security:intercept-url pattern="/sec/member" access="hasRole('ROLE_MEMBER')"/>
+	    <security:intercept-url pattern="/sec/admin" access="hasRole('ROLE_ADMIN')"/>
+	    
+	    <security:intercept-url pattern="/order/*" access="hasRole('ROLE_MEMBER')"/>
+	    
+	    
+	    <!-- 접근권한 오류 403 발생시 페이지 이동 -->
+		<!-- <security:access-denied-handler error-page="/accessErr"/> -->
+		<security:access-denied-handler ref="customAccessDeniedHandler"/>
+	    
+		<security:form-login/>
+	</security:http>   
+	
+	<!-- 인증 관리 -->
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="member" password="{noop}1234" authorities="ROLE_MEMBER" />
+				<security:user name="admin" password="{noop}1234" authorities="ROLE_ADMIN, ROLE_MEMBER"  />
+			</security:user-service>	
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
