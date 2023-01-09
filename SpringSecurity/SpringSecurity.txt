@@ -32,7 +32,37 @@
  	* User : 시큐리티에서는 인증정보+권한을 포함한 객체
  	
  	
+ 	* 스프링 시큐리티에서는 POST방식으로 정보 전달 시 반드시 CSRF토큰 사용
+ 	  => CSRF 토큰 : 사이트간 위조방지를 위한 토큰값
+ 	  
+ 	  - 서버에서 정보요청을 받아들일 때 사전조건검사 X
+ 	  
+ 	* CSRF(Cross-Site Request Forgery) 공격&토큰
  	
+ 		﻿A(공격자) --> B 메일 --> 링크 클릭(B 사용자가 로그인한 페이지 정보 해킹)
+ 				  <== B 토큰정보 가져옴
+ 		
+ 		
+ 	
+ 	* 사용자 정보
+ 	create table users(
+      username varchar(50) primary key,
+      password varchar(50) not null,
+      enabled varchar(1) default '1'   
+   );   
+   
+ 	
+ 	
+ 	* 인증정보
+ 	create table authorities(
+      username varchar(50) not null,
+      authority varchar(50) not null,
+      constraint fk_authorities_users 
+      foreign key(username) references users(username)   
+   );
+ 	
+ 	
+ 	create unique index ix_auth_username on authorities (username,authority);
  	
  	
  	

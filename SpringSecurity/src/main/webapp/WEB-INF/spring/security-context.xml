@@ -8,6 +8,18 @@
 	<!-- 접근권한 에러처리 객체생성 -->
 	<bean id="customAccessDeniedHandler" 
 			class="com.itwillbs.security.CustomAccessDeniedHandler"/>
+			
+	<!-- 로그인 성공 시 페이지이동 처리객체 -->
+	<bean id="customLoginSuccess" 
+		  class="com.itwillbs.security.CustomLoginSuccessHandler" />
+		  
+		  <!-- 비밀번호 암호화 없이 처리객체 -->
+<!-- 		  <bean id="customNoPassword"  -->
+<!-- 		  		class="com.itwillbs.security.CustomNoPasswordEncoder" /> -->
+	
+	<!-- 비밀번호 암호화 처리 객체 -->
+	<bean id="bcryptPasswordEncoder"
+		  class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 	
    <!-- security-context.xml 시큐리티 관련 설정정보 -->
 	<security:http>
@@ -17,21 +29,36 @@
 	    
 	    <security:intercept-url pattern="/order/*" access="hasRole('ROLE_MEMBER')"/>
 	    
-	    
-	    <!-- 접근권한 오류 403 발생시 페이지 이동 -->
+<!-- 기본값 -->	      
+<!-- 	   <security:form-login/> -->
+<!-- 		<security:form-login login-page="/customLogin"/> -->
+		
+<!-- 		<security:csrf disabled="true"/>		 -->
+		
+		<security:form-login login-page="/customLogin" 
+			authentication-success-handler-ref="customLoginSuccess"
+		/>
+		
+		<!-- 접근권한 오류 403 발생시 페이지 이동 -->
 		<!-- <security:access-denied-handler error-page="/accessErr"/> -->
 		<security:access-denied-handler ref="customAccessDeniedHandler"/>
-	    
-		<security:form-login/>
+		
 	</security:http>   
 	
 	<!-- 인증 관리 -->
 	<security:authentication-manager>
 		<security:authentication-provider>
-			<security:user-service>
-				<security:user name="member" password="{noop}1234" authorities="ROLE_MEMBER" />
-				<security:user name="admin" password="{noop}1234" authorities="ROLE_ADMIN, ROLE_MEMBER"  />
-			</security:user-service>	
+			<security:jdbc-user-service data-source-ref="dataSource"/>
+				
+<!-- 			<security:password-encoder ref="customNoPassword"/>	 -->
+			<security:password-encoder ref="bcryptPasswordEncoder"/>	
+			
+<!-- 			<security:user-service> -->
+<!-- 				<security:user name="member" password="{noop}1234" authorities="ROLE_MEMBER" /> -->
+<!-- 				<security:user name="admin" password="{noop}1234" authorities="ROLE_ADMIN, ROLE_MEMBER"  /> -->
+<!-- 			</security:user-service> -->
+			
+				
 		</security:authentication-provider>
 	</security:authentication-manager>
 

@@ -6,6 +6,15 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="dataSource" 
+	      class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	     <!-- 객체에 있는 set()메서드 --> <!-- log4j제외 -->
+	     <property name="driverClassName"  value="com.mysql.cj.jdbc.Driver"/> 
+	     <property name="url" value="jdbc:mysql://localhost:3306/springdb"/>
+	     <property name="username" value="root"/>
+	     <property name="password" value="1234"/>      
+	</bean>	
+		
 		
 <!-- 	<context:component-scan base-package="com.itwillbs.security"></context:component-scan> -->
 </beans>

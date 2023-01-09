@@ -52,4 +52,39 @@ public class HomeController {
 		// /accessErr.jsp 페이지이동
 	}
 	
+	
+	
+	// 로그인 페이지
+		@RequestMapping(value = "/customLogin",method = RequestMethod.GET)
+		public void customLogin() throws Exception{
+			logger.debug(" /customLogin 호출! -> /views/customLogin.jsp 이동 ");
+			
+			
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
